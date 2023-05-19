@@ -325,7 +325,7 @@ class TLMonitor(args: TLMonitorArgs, monitorDir: MonitorDirection = MonitorDirec
       assume (deny_put_ok || !bundle.denied, "'D' channel Grant is denied" + extra)
     }
 
-    when (bundle.opcode === TLMessages.GrantData) {
+    when (bundle.opcode === TLMessages.GrantData || bundle.opcode === TLMessages.GrantDataDirty) {
       assume (source_ok, "'D' channel GrantData carries invalid source ID" + extra)
       assume (sink_ok, "'D' channel GrantData carries invalid sink ID" + extra)
       assume (bundle.size >= log2Ceil(edge.manager.beatBytes).U, "'D' channel GrantData smaller than a beat" + extra)
@@ -639,6 +639,7 @@ class TLMonitor(args: TLMonitorArgs, monitorDir: MonitorDirection = MonitorDirec
 
     val responseMap             = VecInit(Seq(TLMessages.AccessAck, TLMessages.AccessAck, TLMessages.AccessAckData, TLMessages.AccessAckData, TLMessages.AccessAckData, TLMessages.HintAck, TLMessages.Grant,     TLMessages.Grant))
     val responseMapSecondOption = VecInit(Seq(TLMessages.AccessAck, TLMessages.AccessAck, TLMessages.AccessAckData, TLMessages.AccessAckData, TLMessages.AccessAckData, TLMessages.HintAck, TLMessages.GrantData, TLMessages.Grant))
+    val responseMapThirdOption  = VecInit(Seq(TLMessages.AccessAck, TLMessages.AccessAck, TLMessages.AccessAckData, TLMessages.AccessAckData, TLMessages.AccessAckData, TLMessages.HintAck, TLMessages.GrantDataDirty, TLMessages.Grant))
 
     val a_opcodes_set_interm = WireInit(0.U(a_opcode_bus_size.W))
     a_opcodes_set_interm.suggestName("a_opcodes_set_interm")
@@ -683,11 +684,13 @@ class TLMonitor(args: TLMonitorArgs, monitorDir: MonitorDirection = MonitorDirec
 
       when (same_cycle_resp) {
         assume((bundle.d.bits.opcode === responseMap(bundle.a.bits.opcode)) ||
-                (bundle.d.bits.opcode === responseMapSecondOption(bundle.a.bits.opcode)), "'D' channel contains improper opcode response" + extra)
+                (bundle.d.bits.opcode === responseMapSecondOption(bundle.a.bits.opcode)) ||
+                (bundle.d.bits.opcode === responseMapThirdOption(bundle.a.bits.opcode)), "'D' channel contains improper opcode response" + extra)
         assume((bundle.a.bits.size === bundle.d.bits.size), "'D' channel contains improper response size" + extra)
       } .otherwise {
         assume((bundle.d.bits.opcode === responseMap(a_opcode_lookup)) ||
-               (bundle.d.bits.opcode === responseMapSecondOption(a_opcode_lookup)), "'D' channel contains improper opcode response" + extra)
+               (bundle.d.bits.opcode === responseMapSecondOption(a_opcode_lookup)) ||
+               (bundle.d.bits.opcode === responseMapThirdOption(a_opcode_lookup)), "'D' channel contains improper opcode response" + extra)
         assume((bundle.d.bits.size === a_size_lookup), "'D' channel contains improper response size" + extra)
       }
     }

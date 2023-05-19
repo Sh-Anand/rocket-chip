@@ -37,12 +37,13 @@ object TLMessages
   def Grant          = 4.U     //                    .         => GrantAck
   def GrantData      = 5.U     //                    .         => GrantAck
   def ReleaseAck     = 6.U     //                    .
+  def GrantDataDirty = 7.U     //                    .         => GrantAck[PersistenceBit=1]
   def GrantAck       = 0.U     //                         .
 
   def isA(x: UInt) = x <= AcquirePerm
   def isB(x: UInt) = x <= Probe
   def isC(x: UInt) = x <= ReleaseData
-  def isD(x: UInt) = x <= ReleaseAck
+  def isD(x: UInt) = x <= GrantDataDirty
 
   def adResponse = VecInit(AccessAck, AccessAck, AccessAckData, AccessAckData, AccessAckData, HintAck, Grant, Grant)
   def bcResponse = VecInit(AccessAck, AccessAck, AccessAckData, AccessAckData, AccessAckData, HintAck, ProbeAck, ProbeAck)

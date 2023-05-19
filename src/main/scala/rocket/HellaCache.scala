@@ -285,6 +285,7 @@ trait HasHellaCacheModule {
 class L1Metadata(implicit p: Parameters) extends L1HellaCacheBundle()(p) {
   val coh = new ClientMetadata
   val tag = UInt(tagBits.W)
+  val persistence = Bool()
 }
 
 object L1Metadata {
@@ -292,6 +293,15 @@ object L1Metadata {
     val meta = Wire(new L1Metadata)
     meta.tag := tag
     meta.coh := coh
+    meta.persistence := DontCare
+    meta
+  }
+
+  def apply(tag: Bits, coh: ClientMetadata, persistence: Bool)(implicit p: Parameters) = {
+    val meta = Wire(new L1Metadata)
+    meta.tag := tag
+    meta.coh := coh
+    meta.persistence := persistence
     meta
   }
 }

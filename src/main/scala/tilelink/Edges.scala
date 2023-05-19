@@ -67,7 +67,7 @@ class TLEdge(
       case c: TLBundleC => c.opcode(2) && c.opcode(1)
         //    opcode === TLMessages.Release ||
         //    opcode === TLMessages.ReleaseData
-      case d: TLBundleD => d.opcode(2) && !d.opcode(1)
+      case d: TLBundleD => d.opcode.isOneOf(TLMessages.Grant, TLMessages.GrantData, TLMessages.GrantDataDirty)
         //    opcode === TLMessages.Grant     ||
         //    opcode === TLMessages.GrantData
       case e: TLBundleE => Bool(false)
@@ -102,7 +102,7 @@ class TLEdge(
         //    opcode === TLMessages.AccessAckData ||
         //    opcode === TLMessages.ProbeAckData  ||
         //    opcode === TLMessages.ReleaseData
-      case d: TLBundleD => d.opcode(0) && !d.opcode(1)
+      case d: TLBundleD => d.opcode.isOneOf(TLMessages.AccessAckData, TLMessages.GrantData, TLMessages.GrantDataDirty)
         //    opcode === TLMessages.AccessAckData ||
         //    opcode === TLMessages.GrantData
       case e: TLBundleE => Bool(false)
