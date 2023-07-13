@@ -161,5 +161,6 @@ object ClientMetadata {
     meta
   }
   def onReset = ClientMetadata(ClientStates.Nothing)
+  def clean = ClientMetadata(ClientStates.Branch)
   def maximum = ClientMetadata(ClientStates.Dirty)
 }
